@@ -6,7 +6,7 @@ from functools import partial
 from typing import Dict, List, Optional, Set, Tuple, Type
 
 from datasets import Dataset
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 from datasketch import MinHash, MinHashLSH
 from dpu_utils.utils.iterators import ThreadedIterator
@@ -126,7 +126,7 @@ def make_duplicate_clusters(dataset_iterator: Type[Dataset], jaccard_threshold: 
     di = DuplicationIndex(duplication_jaccard_threshold=jaccard_threshold)
 
     for filename, min_hash in tqdm(
-        ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=100)
+        ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=100), total=len(dataset_iterator)
     ):
         di.add(filename, min_hash)
 
