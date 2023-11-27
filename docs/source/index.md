@@ -1,4 +1,4 @@
-# **my-package**
+# **PolyDeDupe**
 
 ```{toctree}
 :maxdepth: 2
@@ -15,8 +15,8 @@ overview
 
 CHANGELOG
 CONTRIBUTING
-License <https://raw.githubusercontent.com/allenai/python-package-template/main/LICENSE>
-GitHub Repository <https://github.com/allenai/python-package-template>
+License <https://raw.githubusercontent.com/allenai/PolyDeDupe/main/LICENSE>
+GitHub Repository <https://github.com/gagan3012/PolyDeDupe>
 ```
 
 ## Indices and tables
