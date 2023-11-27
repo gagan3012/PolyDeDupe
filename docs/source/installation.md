@@ -1,23 +1,23 @@
 Installation
 ============
 
-**my-package** supports Python >= 3.8.
+**PolyDeDupe** supports Python >= 3.8.
 
 ## Installing with `pip`
 
-**my-package** is available [on PyPI](https://pypi.org/project/my-package/). Just run
+**PolyDeDupe** is available [on PyPI](https://pypi.org/project/PolyDeDupe/). Just run
 
 ```bash
-pip install my-package
+pip install PolyDeDupe
 ```
 
 ## Installing from source
 
-To install **my-package** from source, first clone [the repository](https://github.com/allenai/python-package-template):
+To install **PolyDeDupe** from source, first clone [the repository](https://github.com/gagan3012/PolyDeDupe):
 
 ```bash
-git clone https://github.com/allenai/python-package-template.git
-cd python-package-template
+git clone https://github.com/gagan3012/PolyDeDupe.git
+cd PolyDeDupe
 ```
 
 Then run
