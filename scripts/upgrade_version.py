@@ -1,11 +1,12 @@
+import io
 # Filename containing the version information
 filename = 'PolyDeDupe/version.py'
 
 # Read the current version information
-with open(filename, 'r') as file:
+with io.open(filename, 'w', encoding='utf-8') as file:
     lines = file.readlines()
 
-# Increment the minor version
+
 for i, line in enumerate(lines):
     if '_MINOR' in line:
         parts = line.split('=')
@@ -14,5 +15,5 @@ for i, line in enumerate(lines):
         break
 
 # Write the updated version information back to the file
-with open(filename, 'w') as file:
+with io.open(filename, 'w', encoding='utf-8') as file:
     file.writelines(lines)
