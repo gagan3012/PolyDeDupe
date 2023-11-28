@@ -23,7 +23,9 @@ dependencies = [
   "datasketch",
   "dpu_utils",
   "transformers",
-  "regex"
+  "regex",
+  "sklearn",
+  "sentence_transformers"
 ]
 license = {file = "LICENSE"}
 

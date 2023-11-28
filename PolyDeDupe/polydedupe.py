@@ -4,21 +4,24 @@ import re
 from collections import defaultdict
 from functools import partial
 from typing import Dict, List, Optional, Set, Tuple, Type
-
-from datasets import Dataset
+import os
+from datasets import Dataset, load_dataset, concatenate_datasets
 from tqdm.auto import tqdm
 
 from datasketch import MinHash, MinHashLSH
 from dpu_utils.utils.iterators import ThreadedIterator
+from sklearn.metrics.pairwise import cosine_similarity
 
-
-NON_ALPHA = re.compile(
-    "[^\u0080-\u00FF\u0100-\u017F\u0600-\u06FF\u07C0-\u07FF\u0900-\u097F\u1200-\u137F\u2D30-\u2D7F\uA500-\uA63FA-Za-z_0-9]"
-)
+NON_ALPHA = re.compile("[^\u0080-\u00FF\u0100-\u017F\u0600-\u06FF\u07C0-\u07FF\u0900-\u097F\u1200-\u137F\u2D30-\u2D7F\uA500-\uA63FA-Za-z_0-9]")
 # parameters used in DuplicationIndex
 MIN_NUM_TOKENS = 10
 NUM_PERM = 256
 
+
+def get_model(model_name="sentence-transformers/all-MiniLM-L12-v2"):
+  from sentence_transformers import SentenceTransformer
+  model = SentenceTransformer(model_name)  
+  return model
 
 def get_min_hash(tokens: List[str]) -> Optional[MinHash]:
     """Compute the MinHash of a code snippet."""
@@ -34,10 +37,10 @@ def get_tokens(code: str) -> Set[str]:
     """Tokenize a code snippet."""
     return set(get_data(code))
 
-
+  
 def get_data(data):
-    return [t for t in NON_ALPHA.split(data) if len(t.strip()) > 0]
-    # return tokenizer(data)
+  return [t for t in NON_ALPHA.split(data) if len(t.strip()) > 0]
+  # return tokenizer(data)
 
 
 class DuplicationIndex:
@@ -69,6 +72,7 @@ class DuplicationIndex:
 
         self._index.insert(code_key, min_hash)
         if len(close_duplicates) > 0:
+
             for base_duplicate in close_duplicates:
                 if base_duplicate in self._duplicate_clusters:
                     self._duplicate_clusters[base_duplicate].add(code_key)
@@ -100,13 +104,13 @@ class DuplicationIndex:
 
 def _compute_min_hash(element):
     index, data = element
-    min_hash = get_min_hash(get_data(data["text"]))
+    min_hash = get_min_hash(get_data(data['text']))
     if min_hash is not None:
         return index, min_hash
 
 
 def minhash_iter(dataset_iterator: Type[Dataset]):
-    with mp.Pool() as pool:
+    with mp.Pool(os.cpu_count()) as pool:
         for data in pool.imap_unordered(
             _compute_min_hash,
             ThreadedIterator(dataset_iterator, max_queue_size=10000),
@@ -125,10 +129,7 @@ def make_duplicate_clusters(dataset_iterator: Type[Dataset], jaccard_threshold: 
     """
     di = DuplicationIndex(duplication_jaccard_threshold=jaccard_threshold)
 
-    for filename, min_hash in tqdm(
-        ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=100), total=len(dataset_iterator),
-        desc="Deduplicating"
-    ):
+    for filename, min_hash in tqdm(ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=10000), total=len(dataset_iterator), desc="Deduplication"):
         di.add(filename, min_hash)
 
     # Returns a List[Cluster] where Cluster is List[str] with the filenames.
@@ -141,9 +142,7 @@ def jaccard_similarity(code1: str, code2: str) -> float:
     tokens2 = get_tokens(code2)
     return len(tokens1 & tokens2) / len(tokens1 | tokens2)
 
-
 _shared_dataset = None
-
 
 def _find_cluster_extremes_shared(cluster, jaccard_threshold):
     """Find a reduced cluster such that each code in the origin cluster is similar to at least one code in the reduced cluster.
@@ -176,6 +175,25 @@ def _find_cluster_extremes_shared(cluster, jaccard_threshold):
             extremes.append(element1)
     return extremes
 
+def _find_cluster_extremes_shared_semantic(cluster, jaccard_threshold):
+    extremes = []
+    # Convert code snippets to embeddings
+    model = get_model()
+    code_embeddings = {element["base_index"]: model.encode(_shared_dataset[element["base_index"]]["text"])
+                       for element in cluster}
+    
+    for element1 in cluster:
+        embedding1 = code_embeddings[element1["base_index"]]
+        for element2 in extremes:
+            embedding2 = code_embeddings[element2["base_index"]]
+            # Use cosine similarity instead of Jaccard similarity
+            if cosine_similarity([embedding1], [embedding2])[0][0] >= jaccard_threshold:
+                element2["copies"] += 1
+                break
+        else:
+            element1["copies"] = 1
+            extremes.append(element1)
+    return extremes
 
 def find_extremes(cluster_list, dataset, jaccard_threshold):
     """Call the _find_cluster_extremes_shared function in a parallel fashion.
@@ -206,11 +224,44 @@ def find_extremes(cluster_list, dataset, jaccard_threshold):
                 cluster_list,
             ),
             total=len(cluster_list),
-            desc="Finding extremes",
+            desc="Finding overlaps"
         ):
             extremes_list.append(extremes)
     return extremes_list
 
+def find_extremes_semantic(cluster_list, dataset, jaccard_threshold):
+    """Call the _find_cluster_extremes_shared_semantic function in a parallel fashion.
+    Args:
+        cluster_list (List[List[Dict]]):
+            each cluster is a list of dicts with the key base_index,
+            referring to the index of the base code in the dataset.
+        dataset (Type[Dataset]):
+            dataset is used to access the content of the code snippets,
+            using the base_index from the cluster_list.
+            dataset is shared between all the processes using a glabal variable (any other way to share the dataset?),
+            otherwise the multi processing is not speeded up.
+        jaccard_threshold (float):
+            the threshold for the jaccard similarity. The default value is 0.85
+    Returns:
+        extremes_list (List[Dict]):
+            Each cluster is reduced to extremes.
+            See _find_cluster_extremes_shared_semantic for the definition of extremes.
+    """
+    global _shared_dataset
+    _shared_dataset = dataset
+    extremes_list = []
+    f = partial(_find_cluster_extremes_shared_semantic, jaccard_threshold=jaccard_threshold)
+    with mp.Pool() as pool:
+        for extremes in tqdm(
+            pool.imap_unordered(
+                f,
+                cluster_list,
+            ),
+            total=len(cluster_list),
+            desc="Finding overlaps semantically"
+        ):
+            extremes_list.append(extremes)
+    return extremes_list
 
 def display_dataset_entries(dataset, duplicate_clusters):
     """
@@ -218,7 +269,7 @@ def display_dataset_entries(dataset, duplicate_clusters):
 
     Args:
         dataset (Dataset): The dataset object containing the code snippets.
-        duplicate_clusters (List[List[Dict]]): List of duplicate clusters, each containing dictionaries
+        duplicate_clusters (List[List[Dict]]): List of duplicate clusters, each containing dictionaries 
                                                with 'base_index', 'is_extreme', and 'copies' keys.
 
     Returns:
@@ -227,14 +278,11 @@ def display_dataset_entries(dataset, duplicate_clusters):
     for cluster in duplicate_clusters:
         print("Cluster:")
         for item in cluster:
-            base_index = item["base_index"]
+            base_index = item['base_index']
             data_entry = dataset[base_index]  # Assuming the dataset can be accessed by index
             print(f"Base Index: {base_index}, Data: {data_entry}")
 
         print("\n")  # Separate clusters by a newline for clarity
-    
-    
-
 
 def deduplicate_dataset(
     dataset: Type[Dataset], jaccard_threshold: float = 0.85
@@ -273,11 +321,14 @@ def deduplicate_dataset(
     duplicate_indices = set(x["base_index"] for cluster in duplicate_clusters for x in cluster)
     extreme_dict = {}
     extremes_clusters = find_extremes(duplicate_clusters, dataset, jaccard_threshold)
+    extremes_clusters = find_extremes_semantic(extremes_clusters, dataset, jaccard_threshold)
     for extremes in extremes_clusters:
         for element in extremes:
             extreme_dict[element["base_index"]] = element
     remove_indices = duplicate_indices - set(extreme_dict.keys())
+
     ds_filter = dataset.filter(lambda x, idx: idx not in remove_indices, with_indices=True)
+    # duplicate_clusters = filter_cluster(duplicate_clusters, extreme_dict)
 
     # update duplicate_clusters
     for cluster in duplicate_clusters:
