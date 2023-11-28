@@ -18,7 +18,7 @@ MIN_NUM_TOKENS = 10
 NUM_PERM = 256
 
 
-def get_model(model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"):
+def get_model(model_name="sentence-transformers/all-MiniLM-L6-v2"):
     model = SentenceTransformer(model_name)
     return model
 
