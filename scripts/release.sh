@@ -8,6 +8,9 @@ python scripts/upgrade_version.py
 
 TAG=$(python -c 'from PolyDeDupe.version import VERSION; print("v" + VERSION)')
 
+ruff format .
+ruff check . -fix
+
 read -p "Creating new release for $TAG. Do you want to continue? [Y/n] " prompt
 
 if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
