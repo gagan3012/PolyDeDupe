@@ -1,6 +1,5 @@
 import json
 import multiprocessing as mp
-import re
 from collections import defaultdict
 from functools import partial
 from typing import Dict, List, Optional, Set, Tuple, Type
