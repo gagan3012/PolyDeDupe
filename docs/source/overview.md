@@ -1,12 +1,4 @@
-# Installation
-
-PolyDeDupe can be installed using pip:
-
-```bash
-pip install polydedupe
-```
-
-## Usage
+# Usage
 
 ```python
 from PolyDeDupe import deduplicate_dataset, display_dataset_entries
