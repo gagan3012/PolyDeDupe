@@ -9,7 +9,10 @@ from typing import List, Optional
 
 import packaging.version
 
-TAG = os.environ["TAG"]
+from PolyDeDupe.version import VERSION
+
+
+TAG = f"v{VERSION}"
 
 ADDED_HEADER = "### Added 🎉"
 CHANGED_HEADER = "### Changed ⚠️"

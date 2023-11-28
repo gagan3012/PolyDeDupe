@@ -35,3 +35,14 @@ Base Index: 1482, Data: {'instruction': 'Find the five largest cities in France.
 Base Index: 1820, Data: {'instruction': 'Name five cities in France.', 'input': '', 'output': 'The five cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.', 'text': 'Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName five cities in France.\n\n### Response:\nThe five cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.'}
 ```
 
+Citation:
+
+```
+@misc{Bhatia,
+    title={PolyDeDupe: Multi-Lingual Data Deduplication},
+    url={https://github.com/gagan3012/PolyDeDupe},
+    journal={GitHub},
+    publisher={gagan3012}, 
+    author={Bhatia, Gagan}
+}
+```
