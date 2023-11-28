@@ -24,7 +24,7 @@ dependencies = [
   "dpu_utils",
   "transformers",
   "regex",
-  "sklearn",
+  "scikit-learn",
   "sentence_transformers"
 ]
 license = {file = "LICENSE"}

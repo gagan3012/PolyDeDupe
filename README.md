@@ -21,3 +21,17 @@ newdataset = dataset.map(build_dataset, num_proc=16, remove_columns=dataset.colu
 ds_dedup, duplicate_clusters = deduplicate_dataset(newdataset, jaccard_threshold=0.90)
 display_dataset_entries(newdataset, duplicate_clusters)
 ```
+
+Output:
+
+```bash
+Original dataset size: 52002
+Number of duplicate clusters: 40
+Files in duplicate cluster: 82
+Unique files in duplicate cluster: 52
+Filtered dataset size: 51972
+Cluster:
+Base Index: 1482, Data: {'instruction': 'Find the five largest cities in France.', 'input': '', 'output': 'The five largest cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.', 'text': 'Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nFind the five largest cities in France.\n\n### Response:\nThe five largest cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.'}
+Base Index: 1820, Data: {'instruction': 'Name five cities in France.', 'input': '', 'output': 'The five cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.', 'text': 'Below is an instruction that describes a task. Write a response that appropriately completes the request.\n\n### Instruction:\nName five cities in France.\n\n### Response:\nThe five cities in France are Paris, Marseille, Lyon, Toulouse, and Nice.'}
+```
+
