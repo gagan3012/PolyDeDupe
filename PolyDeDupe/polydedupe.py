@@ -126,7 +126,8 @@ def make_duplicate_clusters(dataset_iterator: Type[Dataset], jaccard_threshold: 
     di = DuplicationIndex(duplication_jaccard_threshold=jaccard_threshold)
 
     for filename, min_hash in tqdm(
-        ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=100), total=len(dataset_iterator)
+        ThreadedIterator(minhash_iter(enumerate(dataset_iterator)), max_queue_size=100), total=len(dataset_iterator),
+        desc="Deduplicating"
     ):
         di.add(filename, min_hash)
 
@@ -205,6 +206,7 @@ def find_extremes(cluster_list, dataset, jaccard_threshold):
                 cluster_list,
             ),
             total=len(cluster_list),
+            desc="Finding extremes",
         ):
             extremes_list.append(extremes)
     return extremes_list
@@ -230,6 +232,8 @@ def display_dataset_entries(dataset, duplicate_clusters):
             print(f"Base Index: {base_index}, Data: {data_entry}")
 
         print("\n")  # Separate clusters by a newline for clarity
+    
+    
 
 
 def deduplicate_dataset(
