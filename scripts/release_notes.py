@@ -42,6 +42,7 @@ def get_change_log_notes() -> str:
                 elif line.startswith("### Removed"):
                     line = REMOVED_HEADER + "\n"
                 current_section_notes.append(line)
+    # print(current_section_notes)
     assert current_section_notes
     return "## What's new\n\n" + "".join(current_section_notes).strip() + "\n"
 
@@ -76,8 +77,8 @@ def get_commit_history() -> str:
 
 
 def main():
-    print(get_change_log_notes())
     print(get_commit_history())
+    print(get_change_log_notes())
 
 
 if __name__ == "__main__":
