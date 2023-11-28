@@ -12,6 +12,8 @@ PolyDeDupe is a Python package designed for efficient and effective data dedupli
 
 - **2x faster than other tools**: PolyDeDupe is 2x faster than other tools, such as [SlimPajama](https://github.com/Cerebras/modelzoo/tree/main/modelzoo/transformers/data_processing/slimpajama)
 
+- **Support for Instruction tuning data**: PolyDeDupe supports deduplication of instruction tuning data, which is a common use case in NLP.
+
 ## Installation
 
 PolyDeDupe can be installed using pip:
