@@ -11,18 +11,15 @@ from tqdm.auto import tqdm
 from datasketch import MinHash, MinHashLSH
 from dpu_utils.utils.iterators import ThreadedIterator
 from sklearn.metrics.pairwise import cosine_similarity
+from PolyDeDupe.non_alpha import NON_ALPHA
 
-NON_ALPHA = re.compile(
-    "[^\u0080-\u00FF\u0100-\u017F\u0600-\u06FF\u07C0-\u07FF\u0900-\u097F\u1200-\u137F\u2D30-\u2D7F\uA500-\uA63FA-Za-z_0-9]"
-)
 # parameters used in DuplicationIndex
 MIN_NUM_TOKENS = 10
 NUM_PERM = 256
 
 
-def get_model(model_name="sentence-transformers/all-MiniLM-L12-v2"):
+def get_model(model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"):
     from sentence_transformers import SentenceTransformer
-
     model = SentenceTransformer(model_name)
     return model
 
