@@ -7,11 +7,12 @@ from typing import Dict, List, Optional, Set, Tuple, Type
 import os
 from datasets import Dataset
 from tqdm.auto import tqdm
-
 from datasketch import MinHash, MinHashLSH
 from dpu_utils.utils.iterators import ThreadedIterator
 from sklearn.metrics.pairwise import cosine_similarity
 from PolyDeDupe.non_alpha import NON_ALPHA
+from sentence_transformers import SentenceTransformer
+
 
 # parameters used in DuplicationIndex
 MIN_NUM_TOKENS = 10
@@ -19,7 +20,6 @@ NUM_PERM = 256
 
 
 def get_model(model_name="sentence-transformers/distiluse-base-multilingual-cased-v2"):
-    from sentence_transformers import SentenceTransformer
     model = SentenceTransformer(model_name)
     return model
 
