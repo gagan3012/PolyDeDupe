@@ -1,5 +1,7 @@
 # PolyDeDupe: Multi-Lingual Data Deduplication
 
+![](docs/source/polyde_preview.jpg)
+
 PolyDeDupe is a Python package designed for efficient and effective data deduplication across multiple languages. With support for over 100 languages, this tool stands out in its ability to perform both syntactic and semantic deduplication, ensuring high-quality data preprocessing for various NLP tasks.
 
 ## Features
