@@ -332,7 +332,7 @@ def deduplicate_dataset(
     duplicate_indices = set(x["base_index"] for cluster in duplicate_clusters for x in cluster)
     extreme_dict = {}
     extremes_clusters = find_extremes(duplicate_clusters, dataset, jaccard_threshold)
-    extremes_clusters = find_extremes_semantic(extremes_clusters, dataset, jaccard_threshold)
+    # extremes_clusters = find_extremes_semantic(extremes_clusters, dataset, jaccard_threshold)
     for extremes in extremes_clusters:
         for element in extremes:
             extreme_dict[element["base_index"]] = element

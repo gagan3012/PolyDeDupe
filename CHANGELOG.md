@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v0.16.0](https://github.com/gagan3012/PolyDeDupe/releases/tag/v0.16.0) - 2023-12-03
+
 ## [v0.15.0](https://github.com/gagan3012/PolyDeDupe/releases/tag/v0.15.0) - 2023-11-28
 
 ## [v0.14.0](https://github.com/gagan3012/PolyDeDupe/releases/tag/v0.14.0) - 2023-11-28
