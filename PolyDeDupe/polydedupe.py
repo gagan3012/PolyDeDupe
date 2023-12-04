@@ -101,9 +101,9 @@ class DuplicationIndex:
             json.dump(duplicate_clusters, f)
 
 
-def _compute_min_hash(element):
+def _compute_min_hash(element, column_name="text"):
     index, data = element
-    min_hash = get_min_hash(get_data(data["text"]))
+    min_hash = get_min_hash(get_data(data[column_name]))
     if min_hash is not None:
         return index, min_hash
 
