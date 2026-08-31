@@ -8,5 +8,5 @@ _PATCH = "0"
 _SUFFIX = ""
 
 V2 = _MINOR
-VERSION_SHORT = "{0}.{1}".format(_MAJOR, V2)
-VERSION = "{0}.{1}.{2}{3}".format(_MAJOR, V2, _PATCH, _SUFFIX)
+VERSION_SHORT = f"{_MAJOR}.{V2}"
+VERSION = f"{_MAJOR}.{V2}.{_PATCH}{_SUFFIX}"
