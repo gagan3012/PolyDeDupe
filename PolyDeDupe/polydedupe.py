@@ -1,17 +1,18 @@
 import json
 import multiprocessing as mp
+import os
 from collections import defaultdict
 from functools import partial
 from typing import Dict, List, Optional, Set, Tuple, Type
-import os
+
 from datasets import Dataset
-from tqdm.auto import tqdm
 from datasketch import MinHash, MinHashLSH
 from dpu_utils.utils.iterators import ThreadedIterator
-from sklearn.metrics.pairwise import cosine_similarity
-from PolyDeDupe.non_alpha import NON_ALPHA
 from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+from tqdm.auto import tqdm
 
+from PolyDeDupe.non_alpha import NON_ALPHA
 
 # parameters used in DuplicationIndex
 MIN_NUM_TOKENS = 10
