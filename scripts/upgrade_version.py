@@ -10,7 +10,7 @@ for i, line in enumerate(lines):
     if "_MINOR" in line:
         parts = line.split("=")
         minor_version = int(parts[1].strip().strip('"')) + 1
-        lines[i] = '_MINOR = "{}"\n'.format(minor_version)
+        lines[i] = f'_MINOR = "{minor_version}"\n'
         break
 
 # Write the updated version information back to the file
