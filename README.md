@@ -30,7 +30,7 @@ pip install polydedupe
 from PolyDeDupe import deduplicate_dataset, display_dataset_entries
 from datasets import load_dataset
 
-dataset = load_dataset("tatsu-lab/alpaca",split="train")
+dataset = load_dataset("tatsu-lab/alpaca", split="train")
 ds_dedup, duplicate_clusters = deduplicate_dataset(newdataset, jaccard_threshold=0.90)
 display_dataset_entries(newdataset, duplicate_clusters)
 ```
