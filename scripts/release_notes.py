@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 """
 Prepares markdown release notes for GitHub releases.
 """
@@ -10,7 +8,6 @@ from typing import List, Optional
 import packaging.version
 
 from PolyDeDupe.version import VERSION
-
 
 TAG = f"v{VERSION}"
 
